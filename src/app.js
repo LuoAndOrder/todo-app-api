@@ -1,8 +1,9 @@
 const express = require('express')
-const app = express()
-const port = 3001
-
 const livereload = require('livereload')
+const cors = require('cors')
+const compression = require('compression')
+const bodyParser = require('body-parser')
+
 const connectLiveReload = require('connect-livereload')
 
 const liveReloadServer = livereload.createServer();
@@ -12,14 +13,21 @@ liveReloadServer.server.once('connection', () => {
     }, 100);
 });
 
-app.use(connectLiveReload());
+const app = express();
+const router = express.Router();
 
-app.get('/', (req, res) => {
-    res.send('Hello, world!');
+router.use(compression());
+
+router.use(cors());
+router.use(bodyParser.json());
+router.use(bodyParser.urlencoded({ extended: true }));
+
+router.get('/', (req, res) => {
+    res.json({body: 'Hello, World!'});
 });
 
-app.get('/todos', (req, res) => {
-    res.send([
+router.get('/todos', (req, res) => {
+    res.json([
         {
             id: 1,
             text: 'Learn React',
@@ -43,6 +51,6 @@ app.get('/todos', (req, res) => {
     ]);
 });
 
-app.listen(port, () => {
-    console.log(`Listening at http://localhost:${port}`);
-});
+app.use('/', router);
+
+module.exports = app;

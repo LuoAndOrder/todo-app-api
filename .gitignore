@@ -32,3 +32,7 @@ yarn-error.log*
 
 # vercel
 .vercel
+
+# express build
+/dist
+sam-template.packaged.yaml

@@ -1,0 +1,34 @@
+---
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: Backend API for a todo list application
+
+Resources:
+  ExpressApi:
+    Type: AWS::Serverless::HttpApi
+    Properties:
+      CorsConfiguration:
+        AllowOrigins:
+          - "*"
+          
+  ExpressLambdaFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ./dist
+      Handler: main.handler
+      MemorySize: 1024
+      Runtime: nodejs14.x
+      Timeout: 30
+      Events:
+        ProxyApiRoot:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref ExpressApi
+            Path: /
+            Method: ANY
+        ProxyApiGreedy:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref ExpressApi
+            Path: /{proxy+}
+            Method: ANY
