@@ -10,6 +10,11 @@ Resources:
       CorsConfiguration:
         AllowOrigins:
           - "*"
+
+  TodoItemsTable:
+    Type: AWS::Serverless::SimpleTable
+    Properties:
+      TableName: todo-items-table
           
   ExpressLambdaFunction:
     Type: AWS::Serverless::Function
@@ -32,3 +37,6 @@ Resources:
             ApiId: !Ref ExpressApi
             Path: /{proxy+}
             Method: ANY
+      Policies:
+        DynamoDBCrudPolicy:
+          TableName: !Ref TodoItemsTable
