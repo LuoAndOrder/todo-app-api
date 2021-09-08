@@ -61,7 +61,7 @@ router.get('/todos', async (req, res) => {
     }));
 });
 
-router.post('/todo', async (req, res) => {
+router.post('/todos', async (req, res) => {
     const todo = req.body;
     console.log(todo);
 
@@ -96,7 +96,7 @@ router.post('/todo', async (req, res) => {
     });
 });
 
-router.post('/todo/:todoId', async (req, res) => {
+router.post('/todos/:todoId', async (req, res) => {
     const todoId = req.params.todoId;
     const { text, completed } = req.body;
 
@@ -148,6 +148,33 @@ router.post('/todo/:todoId', async (req, res) => {
             completed: data.Attributes.completed.BOOL
         }
     });
+});
+
+router.delete('/todos/:todoId', async (req, res) => {
+    var params = {
+        TableName: 'todo-items-table', // TODO: Change to env var
+        Key: {
+            id: {S: req.params.todoId.toString()},
+        }
+    };
+
+    var data;
+    var msg;
+
+    try {
+        data = await ddb.deleteItem(params).promise();
+        console.log("Item deleted successfully:", data);
+        msg = 'Item deleted successfully';
+    } catch (err) {
+        console.log("Error deleting item:", err);
+        msg = err;
+        res.status(502).json({
+            message: msg
+        });
+        return;
+    }
+
+    res.status(200).json({});
 });
 
 app.use('/', router);
